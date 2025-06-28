@@ -1,0 +1,10 @@
+{
+  "type": "postgres",
+  "host": "postgres",
+  "port": 5432,
+  "username": "postgres",
+  "password": "password",
+  "database": "bookreview",
+  "entities": ["src/models/*.ts"],
+  "synchronize": true
+}
