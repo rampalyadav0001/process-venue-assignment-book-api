@@ -115,6 +115,79 @@ book-review-api/
 - Use `npm run dev` for local development (with hot reload).
 
 ---
+---
+## Real-time Reviews with GraphQL Subscriptions
+
+This project can be extended to support real-time review updates using **Apollo Server** and **GraphQL Subscriptions**.
+
+### How it works
+
+- **GraphQL schema** includes types for `Book`, `Review`, and a `Subscription` for new reviews.
+- When a review is added, it is published via Apollo Server's `PubSub`.
+- Clients can subscribe to `reviewAdded(bookId: ID!)` to receive real-time updates for specific books.
+- **Redis Pub/Sub** is used as the Apollo Server subscription backend, enabling horizontal scaling across multiple server instances.
+
+### Example GraphQL Schema
+
+```graphql
+type Book {
+    id: ID!
+    title: String!
+    author: String!
+    reviews: [Review!]!
+}
+
+type Review {
+    id: ID!
+    content: String!
+    rating: Int!
+    bookId: ID!
+}
+
+type Subscription {
+    reviewAdded(bookId: ID!): Review!
+}
+
+type Query {
+    books: [Book!]!
+    book(id: ID!): Book
+}
+```
+
+### Implementation Steps
+
+1. **Install dependencies**:
+     ```bash
+     npm install apollo-server-express graphql graphql-redis-subscriptions ioredis
+     ```
+2. **Set up Apollo Server** with the schema and resolvers.
+3. **Publish new reviews** in the mutation resolver using `pubsub.publish`.
+4. **Subscribe** to `reviewAdded` using `pubsub.asyncIterator`.
+5. **Configure Redis PubSub** for distributed subscriptions:
+     ```ts
+     import { RedisPubSub } from 'graphql-redis-subscriptions';
+     const pubsub = new RedisPubSub({
+         connection: { host: 'localhost', port: 6379 }
+     });
+     ```
+
+### Usage
+
+- Start the server and connect a GraphQL client (e.g., Apollo Studio).
+- Subscribe to:
+    ```graphql
+    subscription {
+        reviewAdded(bookId: "1") {
+            id
+            content
+            rating
+        }
+    }
+    ```
+- When a new review is added for that book, subscribers receive updates instantly.
+
+---
+
 
 ## Author
 - [Rampal Yadav](https://github.com/rampalyadav0001)
