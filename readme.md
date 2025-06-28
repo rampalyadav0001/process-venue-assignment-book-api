@@ -23,7 +23,7 @@ A RESTful Book Review service built using **TypeScript + Express**, with **Postg
 ### 1. Clone the repo
 
 ```bash
-git clone <repo-url>
+git clone <https://github.com/rampalyadav0001/process-venue-assignment-book-api>
 cd book-review-api
 ```
 
